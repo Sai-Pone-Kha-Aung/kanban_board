@@ -1,0 +1,15 @@
+.dashboard_title {
+    font-weight: 600;
+    font-size: 1.75rem;
+    letter-spacing: 0.5px;
+    color: #121317;
+    margin-bottom: 1rem;
+}
+
+.dashboard_subtitle {
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    color: #949494;
+    margin-bottom: 2rem;
+}
