@@ -11,7 +11,12 @@ export default function TaskCard({
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showMoveSubmenu, setShowMoveSubmenu] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const menuRef = useRef(null);
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const isOverdue =
+    props.status !== "done" && props.dueDate && props.dueDate < todayStr;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -27,6 +32,16 @@ export default function TaskCard({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isMenuOpen]);
+
+  const handleDragStart = (e) => {
+    e.dataTransfer.setData("text/plain", props.id);
+    e.dataTransfer.effectAllowed = "move";
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
 
   const toggleMenu = (e) => {
     e.stopPropagation();
@@ -56,9 +71,19 @@ export default function TaskCard({
   const availableColumns = columnsList.filter((col) => col.id !== props.status);
 
   return (
-    <div className="item_container">
+    <div
+      className={`item_container ${isDragging ? "is_dragging" : ""} ${
+        isOverdue ? "is_overdue" : ""
+      }`}
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
       <div className="item_header_row">
-        <div className="item_categoty">{props.category}</div>
+        <div className="item_category_row">
+          <span className="item_categoty">{props.category}</span>
+          {isOverdue && <span className="overdue_badge">Overdue</span>}
+        </div>
 
         <div className="item_menu_wrapper" ref={menuRef}>
           <button

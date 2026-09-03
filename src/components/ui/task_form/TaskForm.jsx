@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./TaskForm.style.css";
 import { COLUMNS, INITIAL_CATEGORIES, RESPONSIBLE_PERSONS } from "../../../constant";
 
@@ -36,13 +36,15 @@ function TaskForm({
   const [isAddingCategory, setIsAddingCategory] = useState(() =>
     Boolean(initialData?.category && !categoriesList.includes(initialData.category))
   );
+  const [prevInitialData, setPrevInitialData] = useState(initialData);
 
-  useEffect(() => {
+  if (prevInitialData !== initialData) {
+    setPrevInitialData(initialData);
     setFormData(getInitialState(initialData));
     setIsAddingCategory(
       Boolean(initialData?.category && !categoriesList.includes(initialData.category))
     );
-  }, [initialData]);
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -1,13 +1,22 @@
 import { NavLink } from "react-router-dom";
 import "./Sidebar.style.css";
 import { LayoutDashboard, SquareKanban } from "lucide-react";
+import { useTaskContext } from "../../../context";
 
 function Sidebar() {
+  const { openCreateModal } = useTaskContext();
+
   return (
     <aside className="sidebar_container">
       <h1 className="sidebar_title">Kanban Board</h1>
       <div className="sidebar_menu">
-        <button className="new_task_btn">+ New Task</button>
+        <button
+          type="button"
+          className="new_task_btn"
+          onClick={openCreateModal}
+        >
+          + New Task
+        </button>
         <ul className="sidebar_menu_ul">
           <li>
             <NavLink

@@ -1,91 +1,100 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
-  ClipboardList,
-  Circle,
-  Clock3,
-  CircleCheck,
-  TriangleAlert,
   ChartPie,
   ChartNoAxesColumn,
-  ChartLine,
+  Plus,
+  ArrowRight,
+  TriangleAlert,
 } from "lucide-react";
+import { useTaskContext } from "../../../context";
+import {
+  DashboardStats,
+  StatusDoughnutChart,
+  CategoryBarChart,
+  CompletionPerformanceSection,
+} from "./components";
 import "./Dashboard.style.css";
 
 function Dashboard() {
+  const navigate = useNavigate();
+  const { analytics, openCreateModal } = useTaskContext();
+  const [is30Days, setIs30Days] = useState(false);
+
   return (
     <section className="dashboard">
       <header className="dashboard_header">
-        <div>
-          <h2 className="dashboard_title">Dashboard Overview</h2>
-          <p className="dashboard_subtitle">
-            Real-time metrics and task performance.
-          </p>
+        <div className="dashboard_header_main">
+          <div>
+            <h2 className="dashboard_title">Dashboard Overview</h2>
+            <p className="dashboard_subtitle">
+              Real-time metrics, Kanban board status, and task performance.
+            </p>
+          </div>
+          <div className="dashboard_actions">
+            <button
+              type="button"
+              className="dashboard_add_btn"
+              onClick={openCreateModal}
+            >
+              <Plus size={16} />
+              <span>New Task</span>
+            </button>
+            <Link to="/board" className="dashboard_view_board_btn">
+              <span>Go to Board</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
+
+        {/* Overdue alert banner if any tasks are overdue */}
+        {analytics.overdueCount > 0 && (
+          <div
+            className="overdue_alert_banner"
+            onClick={() => navigate("/board")}
+          >
+            <div className="overdue_alert_left">
+              <TriangleAlert size={18} className="overdue_alert_icon" />
+              <span>
+                <strong>
+                  {analytics.overdueCount} task
+                  {analytics.overdueCount !== 1 ? "s" : ""}
+                </strong>{" "}
+                overdue and requires immediate attention.
+              </span>
+            </div>
+            <span className="overdue_alert_link">
+              View on Board <ArrowRight size={14} />
+            </span>
+          </div>
+        )}
       </header>
 
       <main className="dashboard_main">
-        <div className="stats_row">
-          <div className="stat_card card-total">
-            <div className="stat_top">
-              <span className="stat_label">TOTAL TASKS</span>
-              <div className="stat_icon" aria-hidden>
-                <ClipboardList />
-              </div>
-            </div>
-            <div className="stat_value">0</div>
-          </div>
+        {/* Top Summary Stats */}
+        <DashboardStats analytics={analytics} />
 
-          <div className="stat_card card-todo">
-            <div className="stat_top">
-              <span className="stat_label">TO DO</span>
-              <div className="stat_icon" aria-hidden>
-                <Circle />
-              </div>
-            </div>
-            <div className="stat_value">0</div>
-          </div>
-
-          <div className="stat_card card-doing">
-            <div className="stat_top">
-              <span className="stat_label">DOING</span>
-              <div className="stat_icon" aria-hidden>
-                <Clock3 />
-              </div>
-            </div>
-            <div className="stat_value">0</div>
-          </div>
-
-          <div className="stat_card card-done">
-            <div className="stat_top">
-              <span className="stat_label">DONE</span>
-              <div className="stat_icon" aria-hidden>
-                <CircleCheck />
-              </div>
-            </div>
-            <div className="stat_value">0</div>
-          </div>
-
-          <div className="stat_card card-overdue">
-            <div className="stat_top">
-              <span className="stat_label">OVERDUE</span>
-              <div className="stat_icon" aria-hidden>
-                <TriangleAlert />
-              </div>
-            </div>
-            <div className="stat_value">0</div>
-          </div>
-        </div>
-
+        {/* Charts Grid: Task Status & Tasks by Category */}
         <div className="panels_grid">
+          {/* Status Doughnut */}
           <section className="panel panel-status">
             <div className="panel_header">
               <div className="panel_icon" aria-hidden>
                 <ChartPie />
               </div>
-              <span className="panel_title">Task Status</span>
+              <span className="panel_title">Task Status Breakdown</span>
             </div>
-            <div className="panel_body" />
+            <div className="panel_body">
+              <StatusDoughnutChart
+                todo={analytics.todo}
+                doing={analytics.doing}
+                done={analytics.done}
+                total={analytics.total}
+              />
+            </div>
           </section>
 
+          {/* Tasks by Category */}
           <section className="panel panel-category">
             <div className="panel_header">
               <div className="panel_icon" aria-hidden>
@@ -93,22 +102,21 @@ function Dashboard() {
               </div>
               <span className="panel_title">Tasks by Category</span>
             </div>
-            <div className="panel_body" />
+            <div className="panel_body">
+              <CategoryBarChart
+                data={analytics.categoryDistribution}
+                total={analytics.total}
+              />
+            </div>
           </section>
         </div>
 
-        <section className="panel panel-performance">
-          <div className="panel_header panel_header--space">
-            <div className="panel_header_left">
-              <div className="panel_icon" aria-hidden>
-                <ChartLine />
-              </div>
-              <span className="panel_title">Completion Performance</span>
-            </div>
-            <button className="small_btn">Last 30 Days</button>
-          </div>
-          <div className="panel_body panel_body--large" />
-        </section>
+        {/* Completion Performance Panel */}
+        <CompletionPerformanceSection
+          analytics={analytics}
+          is30Days={is30Days}
+          onToggleRange={(val) => setIs30Days(val)}
+        />
       </main>
     </section>
   );

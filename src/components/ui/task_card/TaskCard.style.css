@@ -6,6 +6,26 @@
     flex-direction: column;
     gap: 0.75rem;
     position: relative;
+    cursor: grab;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.item_container:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.item_container:active {
+    cursor: grabbing;
+}
+
+.item_container.is_dragging {
+    opacity: 0.45;
+    transform: scale(0.98);
+}
+
+.item_container.is_overdue {
+    border-left: 3px solid #ef4444;
 }
 
 .item_header_row {
@@ -13,6 +33,23 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
+}
+
+.item_category_row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.overdue_badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #ef4444;
+    background-color: #fef2f2;
+    padding: 0.2rem 0.45rem;
+    border-radius: 9999px;
+    letter-spacing: 0.5px;
 }
 
 .item_menu_wrapper {
